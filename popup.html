@@ -4,7 +4,8 @@
   <title>LeetCode Friends</title>
   <link rel="stylesheet" href="popup.css" />
 </head>
-<body>  <div class="header">
+<body>
+  <div class="header">
     <h1>Welcome to LeetCode Friends!</h1>
     <div class="theme-toggle-container">
       <label class="switch">
@@ -13,9 +14,12 @@
       </label>
     </div>
   </div>
-  
+
   <div class="content">
-    <p>This popup will let you sign in and access your friends' info.</p>
+    <!-- <button id="open-leetcode" class="primary-btn">Open LeetCode</button> -->
+    <input type="text" id="profile-url" placeholder="Your LeetCode profile URL" />
+    <button id="verify-btn" class="primary-btn">Verify</button>
+    <p id="status" class="status-text"></p>
   </div>
 
   <script src="popup.js"></script>
