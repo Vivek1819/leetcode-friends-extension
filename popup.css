@@ -1,11 +1,12 @@
 body {
   font-family: Arial, sans-serif;
-  min-width: 200px;
+  min-width: 250px;
   padding: 10px;
   border-radius: 10px;
-  background-color: white; /* default for light */
-  color: black;            /* default text color */
+  background-color: white; 
+  color: black;            
   transition: background-color 0.3s, color 0.3s;
+  position: relative;
 }
 
 body.light {
@@ -18,22 +19,88 @@ body.dark {
   color: #ddd;
 }
 
-h1 {
-  font-size: 16px;
+/* Header section with flexbox layout */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   margin-bottom: 10px;
 }
 
-/* Styling the toggle */
-label {
-  display: flex;
-  align-items: center;
-  margin-top: 20px;
-  font-size: 14px;
+h1 {
+  font-size: 16px;
+  margin: 0;
+  flex-grow: 1;
 }
 
-input[type="checkbox"] {
-  margin-right: 8px;
-  width: 16px;
+/* Content container */
+.content {
+  margin-top: 5px;
+}
+
+/* Styling the toggle container */
+.theme-toggle-container {
+  display: flex;
+  align-items: center;
+  font-size: 12px;
+  margin-left: 10px;
+}
+
+/* The switch - the box around the slider */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 28px;
   height: 16px;
+}
+
+/* Hide default HTML checkbox */
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+/* The slider */
+.slider {
+  position: absolute;
   cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  transition: .4s;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 12px;
+  width: 12px;
+  left: 2px;
+  bottom: 2px;
+  background-color: white;
+  transition: .4s;
+}
+
+input:checked + .slider {
+  background-color: #2196F3;
+}
+
+input:focus + .slider {
+  box-shadow: 0 0 1px #2196F3;
+}
+
+input:checked + .slider:before {
+  transform: translateX(12px);
+}
+
+/* Rounded sliders */
+.slider.round {
+  border-radius: 20px;
+}
+
+.slider.round:before {
+  border-radius: 50%;
 }

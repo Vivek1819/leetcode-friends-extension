@@ -4,14 +4,19 @@
   <title>LeetCode Friends</title>
   <link rel="stylesheet" href="popup.css" />
 </head>
-<body>
-  <h1>Welcome to LeetCode Friends!</h1>
-  <p>This popup will let you sign in and access your friends' info.</p>
-
-  <label>
-    <input type="checkbox" id="theme-toggle" />
-    Dark Mode
-  </label>
+<body>  <div class="header">
+    <h1>Welcome to LeetCode Friends!</h1>
+    <div class="theme-toggle-container">
+      <label class="switch">
+        <input type="checkbox" id="theme-toggle">
+        <span class="slider round"></span>
+      </label>
+    </div>
+  </div>
+  
+  <div class="content">
+    <p>This popup will let you sign in and access your friends' info.</p>
+  </div>
 
   <script src="popup.js"></script>
 </body>
