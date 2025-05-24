@@ -167,3 +167,45 @@ body.dark input#profile-url {
 body.dark .status-text {
   color: #aaa;
 }
+
+/* LeetCode style button */
+#register-btn {
+  background-color: #ffa116;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  margin-top: 10px;
+  width: 100%;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  display: block;
+  text-align: center;
+}
+
+#register-btn:hover {
+  background-color: rgb(254, 174, 26);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+#register-btn:active {
+  background-color: #1c7f3d;
+  transform: translateY(1px);
+}
+
+/* Dark mode style for the button */
+body.dark #register-btn {
+  background-color: #3e8e41;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+body.dark #register-btn:hover {
+  background-color: #4caf50;
+}
+
+body.dark #register-btn:active {
+  background-color: #357a38;
+}
