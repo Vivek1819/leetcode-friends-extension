@@ -2,12 +2,12 @@
   "manifest_version": 3,
   "name": "LeetCode Friends",
   "version": "1.0",
-  "description": "See which of your friends have solved this problem.",
-  "permissions": ["storage", "scripting", "activeTab"],
-  "content_scripts": [
+  "description": "See which of your friends have solved this problem and track your submissions.",
+  "permissions": ["storage", "scripting", "activeTab", "tabs"],
+  "host_permissions": ["https://leetcode.com/*"],  "content_scripts": [
     {
       "matches": ["https://leetcode.com/*"],
-      "js": ["content.js"],
+      "js": ["config.js", "scraper.js", "content.js"],
       "run_at": "document_idle",
       "css": ["style.css"]
     }
