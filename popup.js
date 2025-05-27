@@ -1,10 +1,8 @@
 chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
   const tab = tabs[0];
-
   if (!tab || !tab.url || !tab.url.includes("leetcode.com")) {
-    document.body.innerHTML = `
+    document.querySelector(".content").innerHTML = `
       <div style="text-align:center; padding:10px;">
-        <img src="public/leetcode.png" width="50" />
         <p style="font-size:14px;">Please visit <b>leetcode.com</b> to use this extension.</p>
       </div>
     `;
@@ -99,10 +97,8 @@ chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
 
         if (!username) {
           username = await getUsernameFromPage();
-        }
-
-        if (!username) {
-          document.body.innerHTML = `
+        }        if (!username) {
+          document.querySelector(".content").innerHTML = `
           <div style="text-align:center; padding:10px;">
             <p style="font-size:14px;">Please <b>sign in</b> to LeetCode.</p>
           </div>
@@ -110,40 +106,45 @@ chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
           return;
         }
 
-        const userExists = await checkUserExists(username);
-
-        if (userExists) {
+        const userExists = await checkUserExists(username);        if (userExists) {
           let syncInfo = "";
           if (lastSubmissionSync) {
             const syncDate = new Date(lastSubmissionSync);
-            syncInfo = `
-            <div class="sync-info">
-              <p>Last sync: ${syncDate.toLocaleString()}</p>
-              <p>${submissionCount || 0} submissions tracked</p>
-            </div>
-          `;
-          }
-
-          document.body.innerHTML = `
-          <div style="text-align:center; padding:10px;">            <p style="font-size:14px;">Welcome back, <b>${username}</b>!</p>
-            ${syncInfo}
-            <button id="sync-btn" class="primary-btn">Quick Sync</button>
-            <div style="margin-top: 8px; text-align: center;">
-              <a href="#" id="full-sync-btn" style="font-size: 12px; color: #0070f3; text-decoration: underline;">
-                Perform Full Scan
-              </a>
+            
+          }          document.querySelector(".content").innerHTML = `
+          <div style="text-align:center; padding:10px;">
+            <p style="font-size:14px;">Welcome back, <b>${username}</b>!</p>
+            <button id="sync-btn" class="primary-btn">
+              <span style="display:flex; align-items:center; justify-content:center;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:5px;">
+                  <polyline points="16 16 12 12 8 16"></polyline>
+                  <line x1="12" y1="12" x2="12" y2="21"></line>
+                  <path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"></path>
+                  <polyline points="16 16 12 12 8 16"></polyline>
+                </svg>
+                Quick Sync
+              </span>
+            </button>
+            <div style="margin-top: 10px; text-align: center;">
+              <button id="full-sync-btn" class="secondary-btn">
+                <span style="display:flex; align-items:center; justify-content:center;">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:5px;">
+                    <polyline points="1 4 1 10 7 10"></polyline>
+                    <polyline points="23 20 23 14 17 14"></polyline>
+                    <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"></path>
+                  </svg>
+                  Full Scan
+                </span>
+              </button>
             </div>
           </div>
-        `;
-
-          document
+        `;          document
             .getElementById("sync-btn")
             .addEventListener("click", () => startScraping(false));
           document
             .getElementById("full-sync-btn")
-            .addEventListener("click", () => startScraping(true));
-        } else {
-          document.body.innerHTML = `
+            .addEventListener("click", () => startScraping(true));        } else {
+          document.querySelector(".content").innerHTML = `
           <div style="text-align:center; padding:10px;">
             <p style="font-size:14px;">Hello <b>${username}</b>! You're not registered yet.</p>
             <button id="register-btn">

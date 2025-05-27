@@ -202,6 +202,11 @@ const startSubmissionScraping = async (username, forceFullScan = false) => {
   
   window.forceFullScan = forceFullScan;
   
+  // Reset submission count at the start of each scraping session
+  chrome.storage.local.set({ submissionCount: 0 }, () => {
+    console.log("Reset submission count for new scraping session");
+  });
+  
   if (!window.location.href.includes('/submissions/')) {
     console.log("Not on submissions page. Redirecting...");
     window.location.href = window.LeetCodeFriendsConfig.SUBMISSIONS_PAGE_URL + '#/1';
@@ -345,13 +350,20 @@ const setupNavigationHandlers = (username) => {
         return;
       }
       
-      const noMoreText = document.querySelector('div.placeholder-text');
-      if (noMoreText && noMoreText.textContent.includes('No more submissions')) {
+      const noMoreText = document.querySelector('div.placeholder-text');      if (noMoreText && noMoreText.textContent.includes('No more submissions')) {
         console.log("🏁 Finished scraping - no more submissions found");
-        chrome.storage.local.set({ 
-          scrapingCompleted: true,
-          scrapingCompletedAt: new Date().toISOString()
+        
+        chrome.storage.local.get(['submissionCount'], (result) => {
+          const finalCount = result.submissionCount || 0;
+          console.log(`Final submission count for this session: ${finalCount}`);
+          
+          chrome.storage.local.set({ 
+            scrapingCompleted: true,
+            scrapingCompletedAt: new Date().toISOString(),
+            finalSubmissionCount: finalCount
+          });
         });
+        
         return;
       }
       const submissions = parseSubmissionsPage();      if (submissions.length > 0) {
@@ -374,13 +386,21 @@ const setupNavigationHandlers = (username) => {
             }
             return matches;
           });
-          
-          if (foundPreviousSubmission) {
+            if (foundPreviousSubmission) {
             console.log(`🏁 Found previously scraped submission ${lastScrapedSubmissionId}, stopping scan`);
-            chrome.storage.local.set({ 
-              scrapingCompleted: true,
-              scrapingCompletedAt: new Date().toISOString()
+            
+            // Get current count before marking as completed
+            chrome.storage.local.get(['submissionCount'], (result) => {
+              const finalCount = result.submissionCount || 0;
+              console.log(`Final submission count for this session: ${finalCount}`);
+              
+              chrome.storage.local.set({ 
+                scrapingCompleted: true,
+                scrapingCompletedAt: new Date().toISOString(),
+                finalSubmissionCount: finalCount // Store the final count as a separate value
+              });
             });
+            
             return;
           }
         }
@@ -396,12 +416,18 @@ const setupNavigationHandlers = (username) => {
           setTimeout(() => {
             isProcessing = false;
             processAndNavigate();
-          }, 3000); 
-        } else {
+          }, 3000);        } else {
           console.log("🏁 Finished scraping - no more pages found");
-          chrome.storage.local.set({ 
-            scrapingCompleted: true,
-            scrapingCompletedAt: new Date().toISOString()
+          
+          chrome.storage.local.get(['submissionCount'], (result) => {
+            const finalCount = result.submissionCount || 0;
+            console.log(`Final submission count for this session: ${finalCount}`);
+            
+            chrome.storage.local.set({ 
+              scrapingCompleted: true,
+              scrapingCompletedAt: new Date().toISOString(),
+              finalSubmissionCount: finalCount
+            });
           });
         }
       } else {
@@ -436,11 +462,17 @@ const setupNavigationHandlers = (username) => {
               isProcessing = false;
               processAndNavigate();
             }, 3000);
-          } else {
-            console.log("No more pages to navigate to, ending scraper");
-            chrome.storage.local.set({ 
-              scrapingCompleted: true,
-              scrapingCompletedAt: new Date().toISOString()
+          } else {            console.log("No more pages to navigate to, ending scraper");
+            
+            chrome.storage.local.get(['submissionCount'], (result) => {
+              const finalCount = result.submissionCount || 0;
+              console.log(`Final submission count for this session: ${finalCount}`);
+              
+              chrome.storage.local.set({ 
+                scrapingCompleted: true,
+                scrapingCompletedAt: new Date().toISOString(),
+                finalSubmissionCount: finalCount
+              });
             });
           }
         }
