@@ -11,17 +11,15 @@ chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
     return;
   }
 
-  /**
-   * Get username from storage or extract from page
-   */
   const getUsernameFromPage = () => {
     return new Promise((resolve) => {
-      // Inject script to extract username from page
       chrome.scripting.executeScript(
         {
           target: { tabId: tab.id },
           function: () => {
-            const avatarImg = document.querySelector('img[src*="leetcode.com/users/"]');
+            const avatarImg = document.querySelector(
+              'img[src*="leetcode.com/users/"]'
+            );
             if (avatarImg && avatarImg.src) {
               const match = avatarImg.src.match(/users\/([^/]+)\/avatar/);
               return match ? match[1] : null;
@@ -32,7 +30,6 @@ chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
         (results) => {
           if (results && results[0] && results[0].result) {
             const username = results[0].result;
-            // Store the username in local storage
             chrome.storage.local.set({ leetcodeUsername: username }, () => {
               console.log("Username stored from page:", username);
               resolve(username);
@@ -45,16 +42,16 @@ chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
     });
   };
 
-  /**
-   * Register new user in backend
-   */
   const registerUser = async (username) => {
     try {
-      const response = await fetch(`${window.LeetCodeFriendsConfig.API_BASE_URL}/register`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username }),
-      });
+      const response = await fetch(
+        `${window.LeetCodeFriendsConfig.API_BASE_URL}/register`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ username }),
+        }
+      );
 
       if (response.status === 201) {
         const data = await response.json();
@@ -68,12 +65,11 @@ chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
     }
   };
 
-  /**
-   * Check if user exists
-   */
   const checkUserExists = async (username) => {
     try {
-      const response = await fetch(`${window.LeetCodeFriendsConfig.API_BASE_URL}/${username}`);
+      const response = await fetch(
+        `${window.LeetCodeFriendsConfig.API_BASE_URL}/${username}`
+      );
       return response.status === 200;
     } catch (error) {
       console.error("Error checking user:", error);
@@ -83,56 +79,52 @@ chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
   /**
    * Navigate to submissions page to start scraping
    * @param {boolean} fullScan - If true, perform a full scan ignoring previous checkpoints
-   */  
+   */
   const startScraping = (fullScan = false) => {
-    const scrapeUrl = window.LeetCodeFriendsConfig.SUBMISSIONS_PAGE_URL + 
-      "#/1?scrape=true" + (fullScan ? "&full=true" : "");
-    
+    const scrapeUrl =
+      window.LeetCodeFriendsConfig.SUBMISSIONS_PAGE_URL +
+      "#/1?scrape=true" +
+      (fullScan ? "&full=true" : "");
+
     chrome.tabs.update(tab.id, { url: scrapeUrl });
     window.close();
   };
 
-  /**
-   * Initialize the popup
-   */
   const initializePopup = async () => {
-    // First check if we have the username in storage
-    chrome.storage.local.get(["leetcodeUsername", "lastSubmissionSync", "submissionCount"], async (data) => {
-      let username = data.leetcodeUsername;
-      const { lastSubmissionSync, submissionCount } = data;
+    chrome.storage.local.get(
+      ["leetcodeUsername", "lastSubmissionSync", "submissionCount"],
+      async (data) => {
+        let username = data.leetcodeUsername;
+        const { lastSubmissionSync, submissionCount } = data;
 
-      // If no username in storage, try to extract it from page
-      if (!username) {
-        username = await getUsernameFromPage();
-      }
+        if (!username) {
+          username = await getUsernameFromPage();
+        }
 
-      if (!username) {
-        // Still no username, user must not be logged in to LeetCode
-        document.body.innerHTML = `
+        if (!username) {
+          document.body.innerHTML = `
           <div style="text-align:center; padding:10px;">
             <p style="font-size:14px;">Please <b>sign in</b> to LeetCode.</p>
           </div>
         `;
-        return;
-      }
+          return;
+        }
 
-      // Check if user exists in database
-      const userExists = await checkUserExists(username);
+        const userExists = await checkUserExists(username);
 
-      if (userExists) {
-        // User exists, show sync button
-        let syncInfo = '';
-        if (lastSubmissionSync) {
-          const syncDate = new Date(lastSubmissionSync);
-          syncInfo = `
+        if (userExists) {
+          let syncInfo = "";
+          if (lastSubmissionSync) {
+            const syncDate = new Date(lastSubmissionSync);
+            syncInfo = `
             <div class="sync-info">
               <p>Last sync: ${syncDate.toLocaleString()}</p>
               <p>${submissionCount || 0} submissions tracked</p>
             </div>
           `;
-        }
+          }
 
-        document.body.innerHTML = `
+          document.body.innerHTML = `
           <div style="text-align:center; padding:10px;">            <p style="font-size:14px;">Welcome back, <b>${username}</b>!</p>
             ${syncInfo}
             <button id="sync-btn" class="primary-btn">Quick Sync</button>
@@ -144,11 +136,14 @@ chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
           </div>
         `;
 
-        document.getElementById("sync-btn").addEventListener("click", () => startScraping(false));
-        document.getElementById("full-sync-btn").addEventListener("click", () => startScraping(true));
-      } else {
-        // User does not exist, show register button
-        document.body.innerHTML = `
+          document
+            .getElementById("sync-btn")
+            .addEventListener("click", () => startScraping(false));
+          document
+            .getElementById("full-sync-btn")
+            .addEventListener("click", () => startScraping(true));
+        } else {
+          document.body.innerHTML = `
           <div style="text-align:center; padding:10px;">
             <p style="font-size:14px;">Hello <b>${username}</b>! You're not registered yet.</p>
             <button id="register-btn">
@@ -165,20 +160,20 @@ chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
           </div>
         `;
 
-        document.getElementById("register-btn").addEventListener("click", async () => {
-          const registerSuccess = await registerUser(username);
-          if (registerSuccess) {
-            // Start scraping immediately after registration
-            startScraping();
-          } else {
-            alert("Registration failed. Please try again.");
-          }
-        });
+          document
+            .getElementById("register-btn")
+            .addEventListener("click", async () => {
+              const registerSuccess = await registerUser(username);
+              if (registerSuccess) {
+                startScraping();
+              } else {
+                alert("Registration failed. Please try again.");
+              }
+            });
+        }
       }
-    });
+    );
   };
-
-  // Start initialization
   initializePopup();
 });
 
@@ -186,8 +181,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const checkbox = document.getElementById("theme-toggle");
   if (checkbox) {
     const body = document.body;
-
-    // Theme toggle logic
     checkbox.checked = body.classList.contains("dark");
     checkbox.addEventListener("change", () => {
       if (checkbox.checked) {
