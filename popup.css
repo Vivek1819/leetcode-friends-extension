@@ -24,8 +24,9 @@ body.dark {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 8px;
+  margin-bottom: 2px;
   margin-top: 5px;
+  padding-left: 10px;
 }
 
 .logo-container {
@@ -46,35 +47,34 @@ body.dark h1 {
   color: #f0f0f0;
 }
 
-/* Content container */
 .content {
   margin-top: 0px;
 }
 
-/* Styling the toggle container */
 .theme-toggle-container {
   display: flex;
   align-items: center;
+  justify-content: center;
   font-size: 12px;
   margin-left: 10px;
+  position: relative;
+  height: 100%;
 }
 
-/* The switch - the box around the slider */
 .switch {
   position: relative;
   display: inline-block;
-  width: 28px;
-  height: 16px;
+  width: 32px;
+  height: 18px;
+  top: 1px;
 }
 
-/* Hide default HTML checkbox */
 .switch input {
   opacity: 0;
   width: 0;
   height: 0;
 }
 
-/* The slider */
 .slider {
   position: absolute;
   cursor: pointer;
@@ -82,8 +82,9 @@ body.dark h1 {
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: #ccc;
-  transition: 0.4s;
+  background-color: #e0e0e0;
+  transition: 0.3s;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 .slider:before {
@@ -94,22 +95,22 @@ body.dark h1 {
   left: 2px;
   bottom: 2px;
   background-color: white;
-  transition: 0.4s;
+  transition: 0.3s;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
 }
 
 input:checked + .slider {
-  background-color: #2196f3;
+  background-color: #ffa116;
 }
 
 input:focus + .slider {
-  box-shadow: 0 0 1px #2196f3;
+  box-shadow: inset 0 0 0 1px #ffa116;
 }
 
 input:checked + .slider:before {
-  transform: translateX(12px);
+  transform: translateX(14px);
 }
 
-/* Rounded sliders */
 .slider.round {
   border-radius: 34px;
 }
@@ -118,7 +119,28 @@ input:checked + .slider:before {
   border-radius: 50%;
 }
 
-/* New styles for sync information */
+body.dark .slider {
+  background-color: #444;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+body.dark .slider:before {
+  background-color: #f0f0f0;
+}
+
+.switch::before, .switch::after {
+  font-size: 10px;
+  position: absolute;
+  top: 1px;
+  z-index: 2;
+}
+
+.switch::before {
+  left: 3px;
+  opacity: 0.7;
+  font-size: 8px;
+}
+
 .sync-info {
   margin-top: 15px;
   padding: 10px;

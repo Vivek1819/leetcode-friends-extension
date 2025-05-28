@@ -97,10 +97,9 @@ chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
 
         if (!username) {
           username = await getUsernameFromPage();
-        }        if (!username) {
-          document.querySelector(".content").innerHTML = `
+        }        if (!username) {          document.querySelector(".content").innerHTML = `
           <div style="text-align:center; padding:10px;">
-            <p style="font-size:14px;">Please <b>sign in</b> to LeetCode.</p>
+            <p style="font-size:14px; margin-bottom:15px;">Please <b>sign in</b> to LeetCode.</p>
           </div>
         `;
           return;
@@ -110,10 +109,9 @@ chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
           let syncInfo = "";
           if (lastSubmissionSync) {
             const syncDate = new Date(lastSubmissionSync);
-            
-          }          document.querySelector(".content").innerHTML = `
+              }          document.querySelector(".content").innerHTML = `
           <div style="text-align:center; padding:10px;">
-            <p style="font-size:14px;">Welcome back, <b>${username}</b>!</p>
+            <p style="font-size:14px; margin-bottom:15px;">Welcome back, <b>${username}</b>!</p>
             <button id="sync-btn" class="primary-btn">
               <span style="display:flex; align-items:center; justify-content:center;">
                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:5px;">
@@ -143,10 +141,9 @@ chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
             .addEventListener("click", () => startScraping(false));
           document
             .getElementById("full-sync-btn")
-            .addEventListener("click", () => startScraping(true));        } else {
-          document.querySelector(".content").innerHTML = `
+            .addEventListener("click", () => startScraping(true));        } else {          document.querySelector(".content").innerHTML = `
           <div style="text-align:center; padding:10px;">
-            <p style="font-size:14px;">Hello <b>${username}</b>! You're not registered yet.</p>
+            <p style="font-size:14px; margin-bottom:15px;">Hello <b>${username}</b>! You're not registered yet.</p>
             <button id="register-btn">
               <span style="display:flex; align-items:center; justify-content:center;">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:6px;">
@@ -182,14 +179,30 @@ document.addEventListener("DOMContentLoaded", () => {
   const checkbox = document.getElementById("theme-toggle");
   if (checkbox) {
     const body = document.body;
-    checkbox.checked = body.classList.contains("dark");
+    
+    chrome.storage.local.get(['theme'], function(result) {
+      const savedTheme = result.theme || 'light';
+      
+      if (savedTheme === 'dark') {
+        body.classList.add("dark");
+        body.classList.remove("light");
+        checkbox.checked = true;
+      } else {
+        body.classList.add("light");
+        body.classList.remove("dark");
+        checkbox.checked = false;
+      }
+    });
+
     checkbox.addEventListener("change", () => {
       if (checkbox.checked) {
         body.classList.add("dark");
         body.classList.remove("light");
+        chrome.storage.local.set({theme: 'dark'});
       } else {
         body.classList.add("light");
         body.classList.remove("dark");
+        chrome.storage.local.set({theme: 'light'});
       }
     });
   }
