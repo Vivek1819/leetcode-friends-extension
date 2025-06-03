@@ -1,8 +1,8 @@
 body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  min-width: 280px;
-  padding: 12px 15px;
-  border-radius: 10px;
+  min-width: 320px;
+  padding: 0;
+  margin: 0;
   background-color: white;
   color: black;
   transition: background-color 0.3s, color 0.3s;
@@ -24,9 +24,12 @@ body.dark {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 2px;
-  margin-top: 5px;
-  padding-left: 10px;
+  padding: 12px 15px;
+  border-bottom: 1px solid #eee;
+}
+
+body.dark .header {
+  border-bottom-color: #333;
 }
 
 .logo-container {
@@ -49,6 +52,22 @@ body.dark h1 {
 
 .content {
   margin-top: 0px;
+  padding: 15px;
+}
+
+.welcome-section {
+  text-align: center;
+  margin-bottom: 15px;
+}
+
+.welcome-section p {
+  font-size: 14px;
+  margin: 0;
+  color: #666;
+}
+
+body.dark .welcome-section p {
+  color: #bbb;
 }
 
 .theme-toggle-container {
@@ -181,20 +200,43 @@ body.dark .sync-info p {
 }
 
 #register-btn {
-  margin-top: 10px;
-  padding: 8px 16px;
-  background-color: #0070f3;
+  background-color: #ffa116;
   color: white;
   border: none;
-  border-radius: 4px;
-  cursor: pointer;
+  border-radius: 6px;
+  padding: 10px 16px;
   font-size: 14px;
-  transition: background-color 0.3s;
-  display: inline-block;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  margin-top: 10px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
 }
 
 #register-btn:hover {
-  background-color: #0051cc;
+  background-color: rgb(254, 174, 26);
+}
+
+#register-btn:active {
+  background-color: #ff8800;
+  transform: translateY(1px);
+}
+
+/* Dark mode style for the button */
+body.dark #register-btn {
+  background-color: #ffa116;
+}
+
+body.dark #register-btn:hover {
+  background-color: #ffb142;
+}
+
+body.dark #register-btn:active {
+  background-color: #ff8800;
 }
 
 /* Dark mode support */
@@ -236,6 +278,111 @@ body.dark .status-text {
   text-align: center;
 }
 
+/* Friends Management Styles */
+.friends-section {
+  margin-top: 20px;
+  border-top: 1px solid #eee;
+  padding-top: 15px;
+}
+
+body.dark .friends-section {
+  border-top-color: #444;
+}
+
+.friends-section h2 {
+  font-size: 14px;
+  margin-bottom: 10px;
+  text-align: left;
+  color: #333;
+}
+
+body.dark .friends-section h2 {
+  color: #ddd;
+}
+
+.add-friend-form {
+  display: flex;
+  margin-bottom: 15px;
+}
+
+.add-friend-form input {
+  flex: 1;
+  padding: 6px 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px 0 0 4px;
+  font-size: 12px;
+}
+
+body.dark .add-friend-form input {
+  background-color: #2e2e2e;
+  border-color: #444;
+  color: #eee;
+}
+
+.add-friend-form button {
+  background: #ffa116;
+  color: white;
+  border: none;
+  border-radius: 0 4px 4px 0;
+  padding: 0 10px;
+  cursor: pointer;
+}
+
+.add-friend-form button:hover {
+  background-color: #ff8800;
+}
+
+.friends-list {
+  max-height: 150px;
+  overflow-y: auto;
+  text-align: left;
+  border: 1px solid #eee;
+  border-radius: 4px;
+}
+
+body.dark .friends-list {
+  border-color: #444;
+}
+
+.friend-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 10px;
+  border-bottom: 1px solid #eee;
+}
+
+body.dark .friend-item {
+  border-bottom-color: #444;
+}
+
+.friend-item:last-child {
+  border-bottom: none;
+}
+
+.remove-friend {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #ff4d4f;
+  font-size: 12px;
+  padding: 2px;
+  border-radius: 50%;
+  transition: background-color 0.2s;
+}
+
+.remove-friend:hover {
+  background-color: rgba(255, 77, 79, 0.1);
+}
+
+body.dark .remove-friend {
+  color: #ff7875;
+}
+
+body.dark .remove-friend:hover {
+  background-color: rgba(255, 77, 79, 0.2);
+}
+
 #register-btn:hover {
   background-color: rgb(254, 174, 26);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
@@ -261,24 +408,26 @@ body.dark #register-btn:active {
 }
 
 /* Primary Button Style */
+/* Primary Button Style */
 .primary-btn {
   background-color: #ffa116;
   color: white;
   border: none;
-  border-radius: 4px;
-  padding: 8px 12px;
+  border-radius: 6px;
+  padding: 10px;
   font-size: 13px;
-  font-weight: 500;  cursor: pointer;
+  font-weight: 500;
+  cursor: pointer;
   transition: background-color 0.2s;
-  margin-top: 8px;
   width: 100%;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  display: block;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
 }
 
 .primary-btn:hover {
   background-color: rgb(255, 145, 0);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
 
 .primary-btn:active {
@@ -286,40 +435,27 @@ body.dark #register-btn:active {
   transform: translateY(1px);
 }
 
-/* Dark mode support for primary button */
-body.dark .primary-btn {
-  background-color: #ffa116;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-}
-
-body.dark .primary-btn:hover {
-  background-color: #ffb142;
-}
-
-body.dark .primary-btn:active {
-  background-color: #ff8800;
-}
-
 /* Secondary Button Style */
 .secondary-btn {
   background-color: #f0f0f0;
   color: #444;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  padding: 7px 12px;
-  font-size: 12px;
+  border: none;
+  border-radius: 6px;
+  padding: 10px;
+  font-size: 13px;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s;
   width: 100%;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
-  display: block;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
 }
 
 .secondary-btn:hover {
   background-color: #e4e4e4;
   color: #222;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.12);
 }
 
 .secondary-btn:active {
@@ -332,7 +468,6 @@ body.dark .secondary-btn {
   background-color: #2d2d2d;
   color: #ddd;
   border: 1px solid #444;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
 }
 
 body.dark .secondary-btn:hover {
@@ -343,4 +478,346 @@ body.dark .secondary-btn:hover {
 
 body.dark .secondary-btn:active {
   background-color: #333;
+}
+
+/* Tab Navigation */
+.tab-navigation {
+  display: flex;
+  border-bottom: 1px solid #eee;
+  margin-bottom: 15px;
+}
+
+body.dark .tab-navigation {
+  border-bottom-color: #333;
+}
+
+.tab-button {
+  flex: 1;
+  background: none;
+  border: none;
+  padding: 10px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  color: #666;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  position: relative;
+  transition: color 0.2s;
+}
+
+.tab-button svg {
+  stroke: #666;
+  transition: stroke 0.2s;
+}
+
+.tab-button.active {
+  color: #ffa116;
+}
+
+.tab-button.active svg {
+  stroke: #ffa116;
+}
+
+.tab-button::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background-color: #ffa116;
+  transform: scaleX(0);
+  transition: transform 0.2s;
+}
+
+.tab-button.active::after {
+  transform: scaleX(1);
+}
+
+body.dark .tab-button {
+  color: #aaa;
+}
+
+body.dark .tab-button svg {
+  stroke: #aaa;
+}
+
+body.dark .tab-button.active {
+  color: #ffa116;
+}
+
+body.dark .tab-button.active svg {
+  stroke: #ffa116;
+}
+
+/* Tab Content */
+.tab-pane {
+  display: none;
+}
+
+.tab-pane.active {
+  display: block;
+}
+
+/* Sync Tab */
+.sync-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.sync-info {
+  margin-top: 15px;
+  padding: 10px;
+  border-radius: 8px;
+  background-color: #f7f9fa;
+  font-size: 12px;
+}
+
+body.dark .sync-info {
+  background-color: #2d2d2d;
+}
+
+.sync-info p {
+  margin: 5px 0;
+  color: #555;
+}
+
+body.dark .sync-info p {
+  color: #bbb;
+}
+
+/* Friends Tab */
+.friends-container {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.friend-search {
+  display: flex;
+  gap: 8px;
+}
+
+.search-input-container {
+  flex: 1;
+  position: relative;
+}
+
+.search-icon {
+  position: absolute;
+  left: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  stroke: #aaa;
+}
+
+#friend-username {
+  width: 100%;
+  padding: 8px 8px 8px 32px;
+  border-radius: 6px;
+  border: 1px solid #ddd;
+  font-size: 13px;
+  box-sizing: border-box;
+}
+
+body.dark #friend-username {
+  background-color: #2e2e2e;
+  border-color: #444;
+  color: #eee;
+}
+
+.add-btn {
+  background-color: #ffa116;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 0 12px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.add-btn:hover {
+  background-color: #ff8800;
+}
+
+.add-btn:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+body.dark .add-btn:disabled {
+  background-color: #555;
+}
+
+.friends-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-height: 240px;
+  overflow-y: auto;
+  padding-right: 5px;
+}
+
+.friend-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.friend-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+body.dark .friend-card {
+  background-color: #2d2d2d;
+}
+
+body.dark .friend-card:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.friend-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.friend-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 2px solid #eee;
+}
+
+body.dark .friend-avatar {
+  border-color: #444;
+}
+
+.friend-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.friend-details {
+  display: flex;
+  flex-direction: column;
+}
+
+.friend-name {
+  font-weight: 500;
+  font-size: 13px;
+}
+
+.friend-stats {
+  font-size: 11px;
+  color: #888;
+}
+
+body.dark .friend-stats {
+  color: #aaa;
+}
+
+.friend-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.friend-actions button {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.view-profile-btn {
+  background-color: #eee;
+  color: #555;
+}
+
+.view-profile-btn:hover {
+  background-color: #ddd;
+}
+
+body.dark .view-profile-btn {
+  background-color: #444;
+  color: #ddd;
+}
+
+body.dark .view-profile-btn:hover {
+  background-color: #555;
+}
+
+.remove-friend {
+  background-color: rgba(255, 77, 79, 0.1);
+  color: #ff4d4f;
+}
+
+.remove-friend:hover {
+  background-color: rgba(255, 77, 79, 0.2);
+}
+
+body.dark .remove-friend {
+  background-color: rgba(255, 77, 79, 0.15);
+}
+
+body.dark .remove-friend:hover {
+  background-color: rgba(255, 77, 79, 0.25);
+}
+
+.empty-state {
+  text-align: center;
+  padding: 30px 20px;
+  color: #888;
+}
+
+.empty-state p {
+  margin: 5px 0;
+}
+
+.empty-state p:first-child {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.empty-suggestion {
+  font-size: 12px;
+  color: #aaa;
+}
+
+body.dark .empty-state {
+  color: #aaa;
+}
+
+body.dark .empty-suggestion {
+  color: #888;
+}
+
+/* Spinning animation for loading */
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.spin {
+  animation: spin 1s linear infinite;
 }

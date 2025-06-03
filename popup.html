@@ -3,17 +3,9 @@
 <head>
   <title>LeetCode Friends</title>  <link rel="stylesheet" href="popup.css" />
   <script src="config.js"></script>
-  <script>
-    chrome.storage.local.get(['theme'], function(result) {
-      const savedTheme = result.theme || 'light';
-      document.documentElement.classList.add(savedTheme);
-      if (savedTheme === 'dark') {
-        document.body.classList.add('dark');
-      }
-    });
-  </script>
+  <script src="theme.js"></script>
 </head>
-<body>  <div class="header">
+<body><div class="header">
     <div class="logo-container">
       <img src="public/leetcode.png" width="28" alt="LeetCode" />
       <h1>LeetCode Friends</h1>
