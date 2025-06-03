@@ -3,6 +3,9 @@
   "name": "LeetCode Friends",
   "version": "1.0",
   "description": "See which of your friends have solved this problem and track your submissions.",
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'"
+  },
   "permissions": ["storage", "scripting", "activeTab", "tabs"],
   "host_permissions": ["https://leetcode.com/*"],
   "content_scripts": [
