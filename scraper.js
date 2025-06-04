@@ -32,13 +32,6 @@ const parseSubmissionsPage = () => {
     try {
       console.log(`Processing row ${index + 1}...`);
       
-      // Based on the provided HTML, columns are:
-      // 1. Time Submitted
-      // 2. Question (with link to problem)
-      // 3. Status (with link to submission)
-      // 4. Runtime
-      // 5. Language
-      
       const timeColumnElement = row.querySelector('td:nth-child(1)');
       const questionColumnElement = row.querySelector('td:nth-child(2) a');
       const statusColumnElement = row.querySelector('td:nth-child(3) a');
@@ -202,7 +195,6 @@ const startSubmissionScraping = async (username, forceFullScan = false) => {
   
   window.forceFullScan = forceFullScan;
   
-  // Reset submission count at the start of each scraping session
   chrome.storage.local.set({ submissionCount: 0 }, () => {
     console.log("Reset submission count for new scraping session");
   });
@@ -287,9 +279,6 @@ const startSubmissionScraping = async (username, forceFullScan = false) => {
   });
 };
 
-/**
- * Setup handlers for navigating through submission pages
- */
 const setupNavigationHandlers = (username) => {
   let currentPage = 1;
   let isProcessing = false;
@@ -376,9 +365,10 @@ const setupNavigationHandlers = (username) => {
         if (lastScrapedSubmissionId) {
           console.log(`Looking for checkpoint submission ID: ${lastScrapedSubmissionId}`);
           console.log(`Current page submission IDs: ${submissions.map(s => s.submissionId).join(', ')}`);
+          console.log(`Note: Submissions are ordered from newest to oldest, so checking if page has submissions newer than checkpoint...`);
+            const checkpointId = String(lastScrapedSubmissionId);
           
-          const checkpointId = String(lastScrapedSubmissionId);
-          const foundPreviousSubmission = submissions.some(sub => {
+          const checkpointIndex = submissions.findIndex(sub => {
             const subId = String(sub.submissionId);
             const matches = subId === checkpointId;
             if (matches) {
@@ -386,10 +376,21 @@ const setupNavigationHandlers = (username) => {
             }
             return matches;
           });
-            if (foundPreviousSubmission) {
-            console.log(`🏁 Found previously scraped submission ${lastScrapedSubmissionId}, stopping scan`);
+          
+          if (checkpointIndex !== -1) {
+            console.log(`Found checkpoint submission ${lastScrapedSubmissionId} at position ${checkpointIndex + 1} of ${submissions.length}`);
             
-            // Get current count before marking as completed
+            if (checkpointIndex > 0) {
+              const newSubmissions = submissions.slice(0, checkpointIndex);
+              console.log(`Processing ${newSubmissions.length} new submissions from this page before the checkpoint`);
+              
+              if (newSubmissions.length > 0) {
+                await sendSubmissionsToBackend(username, newSubmissions, latestSubmissionId);
+              }
+            }
+            
+            console.log(`🏁 Processed all submissions up to checkpoint ${lastScrapedSubmissionId}, stopping scan`);
+            
             chrome.storage.local.get(['submissionCount'], (result) => {
               const finalCount = result.submissionCount || 0;
               console.log(`Final submission count for this session: ${finalCount}`);
@@ -397,7 +398,7 @@ const setupNavigationHandlers = (username) => {
               chrome.storage.local.set({ 
                 scrapingCompleted: true,
                 scrapingCompletedAt: new Date().toISOString(),
-                finalSubmissionCount: finalCount // Store the final count as a separate value
+                finalSubmissionCount: finalCount 
               });
             });
             

@@ -111,7 +111,6 @@ chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
             const syncDate = new Date(lastSubmissionSync);
           }
           
-          // Fetch friends list
           const fetchFriends = async () => {
             try {
               const response = await fetch(
@@ -126,7 +125,6 @@ chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
               return { friends: [] };
             }          };
           
-          // Initial UI render
           const renderUI = async () => {
             const friendsData = await fetchFriends();
             console.log(friendsData.friends);
@@ -247,7 +245,6 @@ chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
               </div>
             </div>
           `;
-            // Tab navigation event listeners
             document
               .getElementById("sync-tab")
               .addEventListener("click", () => {
@@ -274,7 +271,6 @@ chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
                   .classList.remove("active");
               });
 
-            // Sync button event listeners
             document
               .getElementById("sync-btn")
               .addEventListener("click", () => startScraping(false));
@@ -282,10 +278,9 @@ chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
               .getElementById("full-sync-btn")
               .addEventListener("click", () => startScraping(true));
 
-            // Friend management event listeners
             document
               .getElementById("add-friend-btn")
-              .addEventListener("click", addFriend);            // Add event listeners for remove buttons
+              .addEventListener("click", addFriend);            
             document.querySelectorAll(".remove-friend").forEach((button) => {
               button.addEventListener("click", (e) => {
                 const friendUsername =
@@ -294,7 +289,6 @@ chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
               });
             });
 
-            // View profile buttons
             document.querySelectorAll(".view-profile-btn").forEach((button) => {
               button.addEventListener("click", (e) => {
                 const friendUsername =
@@ -306,14 +300,12 @@ chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
             });
           };
 
-          // Add friend function
           const addFriend = async () => {
             const friendInput = document.getElementById("friend-username");
             const friendUsername = friendInput.value.trim();
 
             if (!friendUsername) return;
 
-            // Add loading state
             const addButton = document.getElementById("add-friend-btn");
             const originalButtonText = addButton.innerHTML;
             addButton.innerHTML = `
