@@ -27,7 +27,8 @@ chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
         },
         (results) => {
           if (results && results[0] && results[0].result) {
-            const username = results[0].result;            chrome.storage.local.set({ leetcodeUsername: username }, () => {
+            const username = results[0].result;
+            chrome.storage.local.set({ leetcodeUsername: username }, () => {
               console.log("Username stored from page:", username);
               resolve(username);
             });
@@ -38,15 +39,36 @@ chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
       );
     });
   };
-
   const registerUser = async (username) => {
     try {
+      let avatarUrl = null;
+      try {
+        const results = await chrome.scripting.executeScript({
+          target: { tabId: tab.id },
+          function: () => {
+            const avatarImg = document.querySelector(
+              'img[src*="leetcode.com/users/"]'
+            );
+            return avatarImg ? avatarImg.src : null;
+          },
+        });
+
+        if (results && results[0] && results[0].result) {
+          avatarUrl = results[0].result;
+        }
+      } catch (e) {
+        console.error("Error getting avatar URL:", e);
+      }
+
       const response = await fetch(
         `${window.LeetCodeFriendsConfig.API_BASE_URL}/register`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ username }),
+          body: JSON.stringify({
+            username,
+            avatar: avatarUrl, 
+          }),
         }
       );
 
@@ -104,13 +126,14 @@ chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
           </div>
         `;
           return;
-        }        const userExists = await checkUserExists(username);
+        }
+        const userExists = await checkUserExists(username);
         if (userExists) {
           let syncInfo = "";
           if (lastSubmissionSync) {
             const syncDate = new Date(lastSubmissionSync);
           }
-          
+
           const fetchFriends = async () => {
             try {
               const response = await fetch(
@@ -123,8 +146,9 @@ chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
             } catch (error) {
               console.error("Error fetching friends:", error);
               return { friends: [] };
-            }          };
-          
+            }
+          };
+
           const renderUI = async () => {
             const friendsData = await fetchFriends();
             console.log(friendsData.friends);
@@ -213,21 +237,33 @@ chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
                         <div class="friend-card">
                           <div class="friend-info">
                             <div class="friend-avatar">
-                              <img src="https://leetcode.com/uploads/default_avatar.png" alt="${friend.username}" class="friend-avatar-img" data-fallback="public/leetcode.png">
+                              <img src="https://leetcode.com/uploads/default_avatar.png" alt="${
+                                friend.username
+                              }" class="friend-avatar-img" data-fallback="public/leetcode.png">
                             </div>
                             <div class="friend-details">
-                              <span class="friend-name">${friend.username}</span>
-                              <span class="friend-stats">${friend.solvedProblems ? `${friend.solvedProblems.length} problems solved` : 'Loading stats...'}</span>
+                              <span class="friend-name">${
+                                friend.username
+                              }</span>
+                              <span class="friend-stats">${
+                                friend.solvedProblems
+                                  ? `${friend.solvedProblems.length} problems solved`
+                                  : "Loading stats..."
+                              }</span>
                             </div>
                           </div>
                           <div class="friend-actions">
-                            <button class="view-profile-btn" data-username="${friend.username}">
+                            <button class="view-profile-btn" data-username="${
+                              friend.username
+                            }">
                               <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
                                 <circle cx="12" cy="12" r="3"></circle>
                               </svg>
                             </button>
-                            <button class="remove-friend" data-username="${friend.username}">
+                            <button class="remove-friend" data-username="${
+                              friend.username
+                            }">
                               <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <line x1="18" y1="6" x2="6" y2="18"></line>
                                 <line x1="6" y1="6" x2="18" y2="18"></line>
@@ -280,7 +316,7 @@ chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
 
             document
               .getElementById("add-friend-btn")
-              .addEventListener("click", addFriend);            
+              .addEventListener("click", addFriend);
             document.querySelectorAll(".remove-friend").forEach((button) => {
               button.addEventListener("click", (e) => {
                 const friendUsername =
@@ -315,7 +351,7 @@ chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
               </svg>
             `;
             addButton.disabled = true;
-            
+
             try {
               const response = await fetch(
                 window.LeetCodeFriendsConfig.FRIENDS_API.ADD_FRIEND(username),
@@ -368,19 +404,22 @@ chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
                 "Error connecting to the API. Make sure your server is running at " +
                   window.LeetCodeFriendsConfig.API_BASE_URL
               );
-            }          };
-          
+            }
+          };
+
           // Remove friend function
           const removeFriend = async (friendUsername) => {
             if (confirm(`Remove ${friendUsername} from your friends?`)) {
               try {
                 const response = await fetch(
-                  window.LeetCodeFriendsConfig.FRIENDS_API.REMOVE_FRIEND(username),
+                  window.LeetCodeFriendsConfig.FRIENDS_API.REMOVE_FRIEND(
+                    username
+                  ),
                   {
                     method: "DELETE",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
-                      friendUsername: friendUsername
+                      friendUsername: friendUsername,
                     }),
                   }
                 );
@@ -404,23 +443,24 @@ chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
                     window.LeetCodeFriendsConfig.API_BASE_URL
                 );
               }
-            }          };
-          
+            }
+          };
+
           // Initialize the UI
           renderUI();
-          
+
           // Function to set up image error handlers for avatar images
           const setupAvatarErrorHandlers = () => {
-            document.querySelectorAll('.friend-avatar-img').forEach(img => {
-              img.addEventListener('error', function() {
-                const fallbackSrc = this.getAttribute('data-fallback');
+            document.querySelectorAll(".friend-avatar-img").forEach((img) => {
+              img.addEventListener("error", function () {
+                const fallbackSrc = this.getAttribute("data-fallback");
                 if (fallbackSrc) {
                   this.src = fallbackSrc;
                 }
               });
             });
           };
-          
+
           // Add a small delay to ensure DOM is ready before adding listeners
           setTimeout(setupAvatarErrorHandlers, 100);
         } else {
@@ -440,13 +480,14 @@ chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
             </button>
           </div>
         `;
-          
+
           document
             .getElementById("register-btn")
             .addEventListener("click", async () => {
               const registerSuccess = await registerUser(username);
               if (registerSuccess) {
-                startScraping();              } else {
+                startScraping();
+              } else {
                 alert("Registration failed. Please try again.");
               }
             });
@@ -460,16 +501,16 @@ chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
 document.addEventListener("DOMContentLoaded", () => {
   // Set up MutationObserver to watch for dynamically added friend images
   const observeFriendsContainer = () => {
-    const friendsContainer = document.querySelector('.friends-list');
+    const friendsContainer = document.querySelector(".friends-list");
     if (friendsContainer) {
       const observer = new MutationObserver((mutations) => {
         mutations.forEach((mutation) => {
-          if (mutation.type === 'childList') {
+          if (mutation.type === "childList") {
             // Look for new images that were added
-            document.querySelectorAll('.friend-avatar-img').forEach(img => {
+            document.querySelectorAll(".friend-avatar-img").forEach((img) => {
               if (!img._hasErrorListener) {
-                img.addEventListener('error', function() {
-                  const fallbackSrc = this.getAttribute('data-fallback');
+                img.addEventListener("error", function () {
+                  const fallbackSrc = this.getAttribute("data-fallback");
                   if (fallbackSrc) {
                     this.src = fallbackSrc;
                   }
@@ -481,15 +522,15 @@ document.addEventListener("DOMContentLoaded", () => {
           }
         });
       });
-      
+
       observer.observe(friendsContainer, { childList: true, subtree: true });
     }
   };
-  
+
   // Try to observe immediately and also set a timeout to try again shortly
   observeFriendsContainer();
   setTimeout(observeFriendsContainer, 500);
-  
+
   const checkbox = document.getElementById("theme-toggle");
   if (checkbox) {
     const body = document.body;
