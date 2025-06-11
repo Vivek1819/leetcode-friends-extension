@@ -41,10 +41,9 @@ const checkUserExists = async (username) => {
 
 const registerUser = async (username) => {
   try {
-    // Get the avatar URL from the image element
     const avatarImg = document.querySelector('img[src*="leetcode.com/users/"]');
     const avatarUrl = avatarImg ? avatarImg.src : null;
-    
+
     const response = await fetch(
       `${window.LeetCodeFriendsConfig.API_BASE_URL}/register`,
       {
@@ -52,9 +51,9 @@ const registerUser = async (username) => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ 
+        body: JSON.stringify({
           username,
-          avatar: avatarUrl // Include avatar URL in the registration
+          avatar: avatarUrl,
         }),
       }
     );
@@ -92,12 +91,6 @@ const fetchFriends = async (username) => {
   }
 };
 
-const storeFriends = (friends) => {
-  chrome.storage.local.set({ leetcodeFriends: friends }, () => {
-    console.log("✅ Friends stored in local storage:", friends);
-  });
-};
-
 const main = async () => {
   let username;
 
@@ -117,13 +110,9 @@ const main = async () => {
   }
   console.log(`Username: ${username}`);
 
+  // Fetch friends data without relying on the solved-problems endpoint
   const friends = await fetchFriends(username);
-  storeFriends(friends);
-
-  const problemSlug = getProblemSlug();
-  if (problemSlug) {
-    console.log(`Current problem slug: ${problemSlug}`);
-  }
+  console.log("✅ Friends data retrieved:", friends ? friends.length : 0);
 
   const isSubmissionsPage = window.location.href.includes("/submissions/");
   const hasScrapingFlag = window.location.href.includes("?scrape=true");
@@ -138,9 +127,46 @@ const main = async () => {
     }
     return;
   }
+  const problemSlug = getProblemSlug();
+  if (problemSlug) {
+    console.log(`Current problem slug: ${problemSlug}`);
+
+    if (window.LeetCodeFriendsAvatarOverlay && friends && friends.length > 0) {
+      console.log("Showing friends' avatar overlay for problem:", problemSlug);
+      console.log("Friends available:", friends.length);
+      console.log(
+        "Is overlay function available:",
+        !!window.LeetCodeFriendsAvatarOverlay
+      );
+      window.LeetCodeFriendsAvatarOverlay.showFriendsAvatarOverlay(
+        problemSlug,
+        friends
+      );
+    } else {
+      console.warn("Cannot show overlay:", {
+        avatarOverlayAvailable: !!window.LeetCodeFriendsAvatarOverlay,
+        friendsAvailable: !!friends,
+        friendsCount: friends ? friends.length : 0,
+      });
+    }
+  }
 
   chrome.storage.local.set({ leetcodeUsername: username });
 };
+
+const handleUrlChange = () => {
+  console.log("URL changed, updating overlay");
+  main();
+};
+
+let lastUrl = location.href;
+new MutationObserver(() => {
+  const url = location.href;
+  if (url !== lastUrl) {
+    lastUrl = url;
+    handleUrlChange();
+  }
+}).observe(document, { subtree: true, childList: true });
 
 if (document.readyState === "loading") {
   document.addEventListener("DOMContentLoaded", main);

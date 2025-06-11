@@ -7,13 +7,11 @@
     "extension_pages": "script-src 'self'; object-src 'self'"
   },
   "permissions": ["storage", "scripting", "activeTab", "tabs"],
-  "host_permissions": ["https://leetcode.com/*"],
-  "content_scripts": [
-    {
-      "matches": ["https://leetcode.com/*"],
-      "js": ["config.js", "scraper.js", "content.js"],
+  "host_permissions": ["https://leetcode.com/*"],  "content_scripts": [
+    {      "matches": ["https://leetcode.com/*"],
+      "js": ["config.js", "scraper.js", "avatarOverlay.js", "content.js"],
       "run_at": "document_idle",
-      "css": ["style.css"]
+      "css": ["style.css", "overlay.css"]
     }
   ],
   "web_accessible_resources": [

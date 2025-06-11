@@ -1,0 +1,39 @@
+#leetcode-friends-solved-overlay {
+  position: fixed !important;
+  top: 50% !important;
+  left: 60% !important;
+  transform: translate(-50%, -50%) translateZ(0) !important; 
+  z-index: 2147483647 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  padding: 10px !important;
+  max-height: 80vh !important;
+  background-color: transparent !important; 
+  transition: opacity 0.3s ease-in-out !important;
+  opacity: 1 !important;
+  min-width: 120px !important;
+  pointer-events: auto !important;
+  isolation: isolate !important; 
+  will-change: transform, opacity !important; 
+}
+
+body > #leetcode-friends-solved-overlay {
+  transform: translate(-50%, -50%) translateZ(0) !important;
+  top: 50% !important;
+  left: 50% !important;
+}
+
+.leetcode-friends-overlay {
+  position: fixed !important;
+  z-index: 2147483647 !important;
+  background-color: transparent !important;
+}
+
+#leetcode-friends-solved-overlay.dark-mode {
+  background-color: rgba(40, 40, 40, 0.95) !important;
+}
+
+#leetcode-friends-solved-overlay.light-mode {
+  background-color: rgba(245, 245, 245, 0.95) !important;
+}
