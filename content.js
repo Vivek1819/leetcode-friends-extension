@@ -110,7 +110,6 @@ const main = async () => {
   }
   console.log(`Username: ${username}`);
 
-  // Fetch friends data without relying on the solved-problems endpoint
   const friends = await fetchFriends(username);
   console.log("✅ Friends data retrieved:", friends ? friends.length : 0);
 
@@ -150,6 +149,30 @@ const main = async () => {
       });
     }
   }
+
+  setTimeout(() => {
+    const friendsBox = document.getElementById("lc-friends-box");
+    if (friendsBox && window.makeDraggable) {
+      console.log("Making lc-friends-box draggable");
+      window.makeDraggable(friendsBox);
+    }
+
+    const scrapingIndicator = document.getElementById(
+      "leetcode-friends-scraping"
+    );
+    if (scrapingIndicator && window.makeDraggable) {
+      console.log("Making scraping indicator draggable");
+      window.makeDraggable(scrapingIndicator);
+    }
+
+    const friendsOverlay = document.getElementById(
+      "leetcode-friends-solved-overlay"
+    );
+    if (friendsOverlay && window.makeDraggable) {
+      console.log("Making friends overlay draggable");
+      window.makeDraggable(friendsOverlay);
+    }
+  }, 1000);
 
   chrome.storage.local.set({ leetcodeUsername: username });
 };

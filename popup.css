@@ -1,5 +1,5 @@
 body {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   min-width: 320px;
   padding: 0;
   margin: 0;
@@ -42,7 +42,7 @@ h1 {
   font-size: 16px;
   margin: 0;
   font-weight: 600;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   color: #3c3c3c;
 }
 
@@ -147,7 +147,8 @@ body.dark .slider:before {
   background-color: #f0f0f0;
 }
 
-.switch::before, .switch::after {
+.switch::before,
+.switch::after {
   font-size: 10px;
   position: absolute;
   top: 1px;
@@ -522,7 +523,7 @@ body.dark .tab-navigation {
 }
 
 .tab-button::after {
-  content: '';
+  content: "";
   position: absolute;
   bottom: -1px;
   left: 0;
@@ -812,10 +813,13 @@ body.dark .empty-suggestion {
   color: #888;
 }
 
-/* Spinning animation for loading */
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 .spin {

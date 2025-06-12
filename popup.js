@@ -67,7 +67,7 @@ chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             username,
-            avatar: avatarUrl, 
+            avatar: avatarUrl,
           }),
         }
       );
@@ -367,19 +367,16 @@ chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
               if (response.ok) {
                 friendInput.value = "";
 
-                // Show success indicator
                 addButton.innerHTML = `
                   <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
                     <polyline points="22 4 12 14.01 9 11.01"></polyline>
                   </svg>
                 `;
-
-                // Reset button after a short delay
                 setTimeout(() => {
                   addButton.innerHTML = originalButtonText;
                   addButton.disabled = false;
-                  renderUI(); // Refresh UI
+                  renderUI();
                 }, 1000);
               } else {
                 try {
@@ -388,7 +385,6 @@ chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
                   addButton.disabled = false;
                   alert(errorData.message || "Failed to add friend");
                 } catch (jsonError) {
-                  // If response is not valid JSON
                   addButton.innerHTML = originalButtonText;
                   addButton.disabled = false;
                   alert(
@@ -407,7 +403,6 @@ chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
             }
           };
 
-          // Remove friend function
           const removeFriend = async (friendUsername) => {
             if (confirm(`Remove ${friendUsername} from your friends?`)) {
               try {
@@ -424,13 +419,12 @@ chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
                   }
                 );
                 if (response.ok) {
-                  renderUI(); // Refresh UI
+                  renderUI();
                 } else {
                   try {
                     const errorData = await response.json();
                     alert(errorData.message || "Failed to remove friend");
                   } catch (jsonError) {
-                    // If response is not valid JSON
                     alert(
                       "Server error: API is unavailable or returned an invalid response"
                     );
@@ -445,11 +439,8 @@ chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
               }
             }
           };
-
-          // Initialize the UI
           renderUI();
 
-          // Function to set up image error handlers for avatar images
           const setupAvatarErrorHandlers = () => {
             document.querySelectorAll(".friend-avatar-img").forEach((img) => {
               img.addEventListener("error", function () {
@@ -461,7 +452,6 @@ chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
             });
           };
 
-          // Add a small delay to ensure DOM is ready before adding listeners
           setTimeout(setupAvatarErrorHandlers, 100);
         } else {
           document.querySelector(".content").innerHTML = `
@@ -499,14 +489,12 @@ chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
 });
 
 document.addEventListener("DOMContentLoaded", () => {
-  // Set up MutationObserver to watch for dynamically added friend images
   const observeFriendsContainer = () => {
     const friendsContainer = document.querySelector(".friends-list");
     if (friendsContainer) {
       const observer = new MutationObserver((mutations) => {
         mutations.forEach((mutation) => {
           if (mutation.type === "childList") {
-            // Look for new images that were added
             document.querySelectorAll(".friend-avatar-img").forEach((img) => {
               if (!img._hasErrorListener) {
                 img.addEventListener("error", function () {
@@ -515,7 +503,6 @@ document.addEventListener("DOMContentLoaded", () => {
                     this.src = fallbackSrc;
                   }
                 });
-                // Mark this image as having an error listener
                 img._hasErrorListener = true;
               }
             });
@@ -527,7 +514,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   };
 
-  // Try to observe immediately and also set a timeout to try again shortly
   observeFriendsContainer();
   setTimeout(observeFriendsContainer, 500);
 

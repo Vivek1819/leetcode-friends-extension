@@ -237,7 +237,6 @@ const startSubmissionScraping = async (username, forceFullScan = false) => {
       window.LeetCodeFriendsConfig.SUBMISSIONS_PAGE_URL + "#/1";
     return;
   }
-
   const addScrapingIndicator = () => {
     const existingIndicator = document.getElementById(
       "leetcode-friends-scraping"
@@ -256,13 +255,48 @@ const startSubmissionScraping = async (username, forceFullScan = false) => {
       border-radius: 4px;
       z-index: 9999;
       font-size: 14px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+      cursor: move;
     `;
     indicator.innerHTML = `
       <div>LeetCode Friends</div>
       <div style="font-size: 12px; margin-top: 5px;">Scanning submissions...</div>
     `;
     document.body.appendChild(indicator);
+    let isDragging = false;
+    let offsetX, offsetY;
+
+    indicator.addEventListener("mousedown", (e) => {
+      isDragging = true;
+
+      const rect = indicator.getBoundingClientRect();
+
+      offsetX = e.clientX - rect.left;
+      offsetY = e.clientY - rect.top;
+
+      indicator.style.cursor = "grabbing";
+      e.preventDefault();
+    });
+
+    document.addEventListener("mousemove", (e) => {
+      if (!isDragging) return;
+
+      const left = e.clientX - offsetX;
+      const top = e.clientY - offsetY;
+
+      indicator.style.left = left + "px";
+      indicator.style.top = top + "px";
+      indicator.style.right = "auto";
+
+      e.preventDefault();
+    });
+
+    document.addEventListener("mouseup", () => {
+      if (isDragging) {
+        isDragging = false;
+        indicator.style.cursor = "move";
+        indicator.classList.add("dragged");
+      }
+    });
 
     chrome.storage.local.get(["submissionCount"], (data) => {
       const count = data.submissionCount || 0;
@@ -537,16 +571,13 @@ const setupNavigationHandlers = (username) => {
             "leetcode-friends-scraping"
           );
           if (indicator) {
-            // Check for existing retry message element
             const existingRetryMsg = Array.from(indicator.children).find(
               (el) => el.textContent && el.textContent.includes("Retrying")
             );
 
             if (existingRetryMsg) {
-              // Update existing message
               existingRetryMsg.textContent = `Retrying (${retryCount}/${MAX_RETRIES})...`;
             } else {
-              // Create new message element if none exists
               const retryMsg = document.createElement("div");
               retryMsg.style.fontSize = "12px";
               retryMsg.textContent = `Retrying (${retryCount}/${MAX_RETRIES})...`;
@@ -563,7 +594,6 @@ const setupNavigationHandlers = (username) => {
           console.log("Max retries reached, moving to next page or ending");
           retryCount = 0;
 
-          // Remove retry message if it exists
           const indicator = document.getElementById(
             "leetcode-friends-scraping"
           );

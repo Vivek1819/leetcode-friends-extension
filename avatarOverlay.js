@@ -72,11 +72,62 @@ const showFriendsAvatarOverlay = (problemSlug, friends) => {
 
       document.body.appendChild(overlayContainer);
       console.log("Overlay container added to document body");
+      let isDragging = false;
+      let offsetX, offsetY;
+      let dragJustEnded = false;
+
+      overlayContainer.addEventListener("mousedown", (e) => {
+        if (
+          e.target === overlayContainer ||
+          e.target.className === "overlay-heading" ||
+          e.target.className === "friend-avatar" ||
+          (e.target.tagName === "IMG" &&
+            e.target.parentElement &&
+            e.target.parentElement.className === "overlay-heading")
+        ) {
+          isDragging = true;
+
+          const rect = overlayContainer.getBoundingClientRect();
+
+          offsetX = e.clientX - rect.left;
+          offsetY = e.clientY - rect.top;
+
+          e.preventDefault();
+        }
+      });
+
+      document.addEventListener("mousemove", (e) => {
+        if (!isDragging) return;
+
+        const left = e.clientX - offsetX;
+        const top = e.clientY - offsetY;
+
+        overlayContainer.style.left = left + "px";
+        overlayContainer.style.top = top + "px";
+        overlayContainer.style.transform = "none";
+
+        e.preventDefault();
+      });
+
+      document.addEventListener("mouseup", () => {
+        if (isDragging) {
+          isDragging = false;
+          overlayContainer.classList.add("dragged");
+
+          dragJustEnded = true;
+
+          setTimeout(() => {
+            dragJustEnded = false;
+          }, 100);
+        }
+      });
       const applyStyles = () => {
-        overlayContainer.style.position = "fixed";
-        overlayContainer.style.top = "50%";
-        overlayContainer.style.left = "50%";
-        overlayContainer.style.transform = "translate(-50%, -50%)";
+        if (!isDragging) {
+          overlayContainer.style.position = "fixed";
+          overlayContainer.style.top = "50%";
+          overlayContainer.style.left = "50%";
+          overlayContainer.style.transform = "translate(-50%, -50%)";
+        }
         overlayContainer.style.zIndex = "2147483647";
         overlayContainer.style.display = "flex";
         overlayContainer.style.flexDirection = "column";
@@ -91,9 +142,7 @@ const showFriendsAvatarOverlay = (problemSlug, friends) => {
 
         const cssText = `
           position: fixed !important;
-          top: 50% !important;
-          left: 50% !important;
-          transform: translate(-50%, -50%) !important;          z-index: 2147483647 !important;
+          z-index: 2147483647 !important;
           display: flex !important;
           flex-direction: column !important;
           align-items: center !important;
@@ -111,8 +160,21 @@ const showFriendsAvatarOverlay = (problemSlug, friends) => {
       setTimeout(applyStyles, 10);
 
       overlayContainer.addEventListener("click", (e) => {
-        if (e.target.tagName !== "IMG") {
+        if (isDragging || dragJustEnded) return;
+
+        const isHeadingOrLogo =
+          e.target === overlayContainer ||
+          e.target.className === "overlay-heading" ||
+          (e.target.tagName === "IMG" &&
+            e.target.parentElement &&
+            e.target.parentElement.className === "overlay-heading");
+
+        if (
+          isHeadingOrLogo ||
+          (e.target.tagName !== "IMG" && e.target.tagName !== "A")
+        ) {
           const isMinimized = overlayContainer.classList.contains("minimized");
+
           if (isMinimized) {
             overlayContainer.classList.remove("minimized");
             overlayContainer.style.opacity = "1";
@@ -123,10 +185,12 @@ const showFriendsAvatarOverlay = (problemSlug, friends) => {
             const moreInfo = overlayContainer.querySelector(".more-info");
             if (moreInfo) moreInfo.style.display = "block";
             const heading = overlayContainer.querySelector(".overlay-heading");
-            if (heading) heading.textContent = "Friends who solved this";
+            if (heading) {
+              heading.style.display = "none";
+            }
           } else {
             overlayContainer.classList.add("minimized");
-            overlayContainer.style.opacity = "0.7";
+            overlayContainer.style.opacity = "0.9";
             const vFormation = overlayContainer.querySelector(
               ".friends-v-formation"
             );
@@ -134,7 +198,18 @@ const showFriendsAvatarOverlay = (problemSlug, friends) => {
             const moreInfo = overlayContainer.querySelector(".more-info");
             if (moreInfo) moreInfo.style.display = "none";
             const heading = overlayContainer.querySelector(".overlay-heading");
-            if (heading) heading.textContent = "Click to expand";
+            if (heading) {
+              heading.style.display = "block";
+              heading.innerHTML = "";
+              const headingImg = document.createElement("img");
+              headingImg.src = chrome.runtime.getURL(
+                "public/leetcode-friends-logo.svg"
+              );
+              headingImg.style.height = "60px";
+              headingImg.style.width = "60px";
+              headingImg.style.display = "inline-block";
+              heading.appendChild(headingImg);
+            }
           }
         }
       });
@@ -169,17 +244,15 @@ const showFriendsAvatarOverlay = (problemSlug, friends) => {
         addAvatarToFormation(vFormation, displayedFriends[1], "bottom-middle");
         addAvatarToFormation(vFormation, displayedFriends[2], "top-right");
       }
+
       const heading = document.createElement("div");
-      heading.textContent = "Friends who solved this";
       heading.className = "overlay-heading";
-      heading.style.color = isDarkMode ? "#ffffff" : "#0a192f"; 
-      heading.style.fontWeight = "bold";
-      heading.style.fontSize = "14px";
       heading.style.marginBottom = "12px";
       heading.style.textAlign = "center";
       heading.style.cursor = "pointer";
       heading.style.padding = "4px";
       heading.title = "Click to minimize/expand";
+      heading.style.display = "none";
 
       const toggleButton = document.createElement("div");
       toggleButton.style.position = "absolute";
@@ -202,7 +275,11 @@ const showFriendsAvatarOverlay = (problemSlug, friends) => {
 
       toggleButton.addEventListener("click", (e) => {
         e.stopPropagation();
+        if (dragJustEnded) return;
+
         const isMinimized = overlayContainer.classList.contains("minimized");
+        const heading = overlayContainer.querySelector(".overlay-heading");
+
         if (isMinimized) {
           overlayContainer.classList.remove("minimized");
           toggleButton.textContent = "−";
@@ -212,6 +289,7 @@ const showFriendsAvatarOverlay = (problemSlug, friends) => {
           if (vFormation) vFormation.style.display = "block";
           const moreInfo = overlayContainer.querySelector(".more-info");
           if (moreInfo) moreInfo.style.display = "block";
+          if (heading) heading.style.display = "none";
         } else {
           overlayContainer.classList.add("minimized");
           toggleButton.textContent = "+";
@@ -221,6 +299,18 @@ const showFriendsAvatarOverlay = (problemSlug, friends) => {
           if (vFormation) vFormation.style.display = "none";
           const moreInfo = overlayContainer.querySelector(".more-info");
           if (moreInfo) moreInfo.style.display = "none";
+          if (heading) {
+            heading.style.display = "block";
+            heading.innerHTML = "";
+            const headingImg = document.createElement("img");
+            headingImg.src = chrome.runtime.getURL(
+              "public/leetcode-friends-logo.svg"
+            );
+            headingImg.style.height = "48px";
+            headingImg.style.width = "48px";
+            headingImg.style.display = "inline-block";
+            heading.appendChild(headingImg);
+          }
         }
       });
 
@@ -356,7 +446,7 @@ const addAvatarToFormation = (container, friend, position) => {
       ? `${baseTransform} scale(1.15)`
       : "scale(1.15)";
     avatarWrapper.style.zIndex = "10";
-    avatar.style.boxShadow = "0 0 12px rgba(255, 161, 22, 0.8)";
+    avatar.style.border = "1px solid rgba(255, 161, 22, 0.8)";
     usernameTooltip.style.opacity = "1";
   });
 
@@ -380,7 +470,7 @@ const addAvatarToFormation = (container, friend, position) => {
 
     avatarWrapper.style.transform = baseTransform || "";
     avatarWrapper.style.zIndex = "";
-    avatar.style.boxShadow = "0 0 6px rgba(0, 0, 0, 0.3)";
+    avatar.style.border = "1px solid rgba(255, 255, 255, 0.3)";
     usernameTooltip.style.opacity = "0";
   });
 
